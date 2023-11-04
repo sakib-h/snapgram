@@ -20,7 +20,10 @@ const SignUpForm = () => {
     const form = useForm<z.infer<typeof signUpValidation>>({
         resolver: zodResolver(signUpValidation),
         defaultValues: {
+            name: "",
             username: "",
+            email: "",
+            password: "",
         },
     });
     function onSubmit(values: z.infer<typeof signUpValidation>) {
