@@ -14,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { signUpValidation } from "@/lib/validation";
 import Loader from "@/components/shared/Loader";
+import { createUserAccount } from "@/lib/appwrite/api";
 
 // form schema
 
@@ -29,10 +30,12 @@ const SignUpForm = () => {
             password: "",
         },
     });
-    function onSubmit(values: z.infer<typeof signUpValidation>) {
+    const onSubmit = async (values: z.infer<typeof signUpValidation>) => {
         // create the user
-        // const newUser = await createUserAccount(values);
-    }
+
+        const newUser = await createUserAccount(values);
+        console.log(newUser);
+    };
     return (
         <Form {...form}>
             <div className="sm:w-420 flex flex-col flex-center ">
