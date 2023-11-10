@@ -20,16 +20,16 @@ import {
     useCreateUserAccount,
     useSignInAccount,
 } from "@/lib/react-query/queriesAndMutations";
-import { SignupValidation } from "@/lib/validation";
+import { SignUpValidation } from "@/lib/validation";
 import { useUserContext } from "@/context/AuthContext";
 
-const SignupForm = () => {
+const SignUpForm = () => {
     const { toast } = useToast();
     const navigate = useNavigate();
     const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
 
-    const form = useForm<z.infer<typeof SignupValidation>>({
-        resolver: zodResolver(SignupValidation),
+    const form = useForm<z.infer<typeof SignUpValidation>>({
+        resolver: zodResolver(SignUpValidation),
         defaultValues: {
             name: "",
             username: "",
@@ -45,7 +45,7 @@ const SignupForm = () => {
         useSignInAccount();
 
     // Handler
-    const handleSignup = async (user: z.infer<typeof SignupValidation>) => {
+    const handleSignUp = async (user: z.infer<typeof SignUpValidation>) => {
         try {
             const newUser = await createUserAccount(user);
 
@@ -99,7 +99,7 @@ const SignupForm = () => {
                 </p>
 
                 <form
-                    onSubmit={form.handleSubmit(handleSignup)}
+                    onSubmit={form.handleSubmit(handleSignUp)}
                     className="flex flex-col gap-5 w-full mt-4"
                 >
                     <FormField
@@ -209,4 +209,4 @@ const SignupForm = () => {
     );
 };
 
-export default SignupForm;
+export default SignUpForm;
