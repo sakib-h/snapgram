@@ -15,14 +15,19 @@ import {
 import { Input } from "@/components/ui/input";
 import { signUpValidation } from "@/lib/validation";
 import Loader from "@/components/shared/Loader";
-import { useCreateUserAccountMutation } from "@/lib/react-query/queriesAndMutations";
+import {
+    useCreateUserAccount,
+    useSignInAccount,
+} from "@/lib/react-query/queriesAndMutations";
 
 // form schema
 
 const SignUpForm = () => {
     const { toast } = useToast();
     const { mutateAsync: createUserAccount, isLoading: isCreatingUser } =
-        useCreateUserAccountMutation();
+        useCreateUserAccount();
+    const { mutateAsync: signInAccount, isLoading: isSigninIn } =
+        useSignInAccount();
 
     const form = useForm<z.infer<typeof signUpValidation>>({
         resolver: zodResolver(signUpValidation),
@@ -44,7 +49,14 @@ const SignUpForm = () => {
             });
         }
 
-        // const session = await signInAccount(values.email, values.password);
+        const session = await signInAccount({
+            email: values.email,
+            password: values.password,
+        });
+
+        if (!session) {
+            return toast({ title: "Sign in failed. Please try again later." });
+        }
     };
     return (
         <Form {...form}>
