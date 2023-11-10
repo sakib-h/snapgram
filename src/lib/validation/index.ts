@@ -1,6 +1,6 @@
 import * as z from "zod";
 
-export const signUpValidation = z.object({
+export const SignupValidation = z.object({
     name: z
         .string()
         .min(2, { message: "Name must be at least 3 characters long" })

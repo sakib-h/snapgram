@@ -1,6 +1,8 @@
 import { ID, Query } from "appwrite";
 import { INewUser } from "@/types";
 import { account, appwriteConfig, avatars, databases } from "./config";
+
+// create user account
 export async function createUserAccount(user: INewUser) {
     try {
         const newAccount = await account.create(
@@ -9,14 +11,14 @@ export async function createUserAccount(user: INewUser) {
             user.password,
             user.name
         );
-        if (!newAccount) throw new Error("Account creation failed");
+        if (!newAccount) throw Error("Account creation failed");
         const avatarUrl = avatars.getInitials(user.name);
         const newUser = await saveUserToDB({
             accountId: newAccount.$id,
-            email: newAccount.email,
             name: newAccount.name,
-            imageUrl: avatarUrl,
+            email: newAccount.email,
             username: user.username,
+            imageUrl: avatarUrl,
         });
 
         return newUser;
@@ -26,6 +28,7 @@ export async function createUserAccount(user: INewUser) {
     }
 }
 
+//  save user to DB
 export async function saveUserToDB(user: {
     accountId: string;
     email: string;
@@ -46,6 +49,7 @@ export async function saveUserToDB(user: {
     }
 }
 
+//  Sign in user account
 export async function signInAccount(user: { email: string; password: string }) {
     try {
         const session = await account.createEmailSession(
@@ -58,9 +62,22 @@ export async function signInAccount(user: { email: string; password: string }) {
     }
 }
 
-export async function getCurrentUser() {
+//  Get user account
+export async function getAccount() {
     try {
         const currentAccount = await account.get();
+
+        return currentAccount;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+//  Get current user
+
+export async function getCurrentUser() {
+    try {
+        const currentAccount = await getAccount();
         if (!currentAccount) throw Error("No current user found");
         const currentUser = await databases.listDocuments(
             appwriteConfig.databaseId,
