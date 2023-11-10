@@ -1,5 +1,5 @@
 import * as z from "zod";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -19,11 +19,14 @@ import {
     useCreateUserAccount,
     useSignInAccount,
 } from "@/lib/react-query/queriesAndMutations";
+import { useUserContext } from "@/context/AuthContext";
 
 // form schema
 
 const SignUpForm = () => {
+    const navigate = useNavigate();
     const { toast } = useToast();
+    const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
     const { mutateAsync: createUserAccount, isLoading: isCreatingUser } =
         useCreateUserAccount();
     const { mutateAsync: signInAccount, isLoading: isSigninIn } =
@@ -55,6 +58,13 @@ const SignUpForm = () => {
         });
 
         if (!session) {
+            return toast({ title: "Sign in failed. Please try again later." });
+        }
+        const isLoggedIn = await checkAuthUser();
+        if (isLoggedIn) {
+            form.reset();
+            navigate("/");
+        } else {
             return toast({ title: "Sign in failed. Please try again later." });
         }
     };
