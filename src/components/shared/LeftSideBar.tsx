@@ -4,6 +4,7 @@ import { useSignOutAccount } from "@/lib/react-query/queriesAndMutations";
 import { useUserContext } from "@/context/AuthContext";
 import { sideBarLinks } from "@/constants";
 import { INavLink } from "@/types";
+import { Button } from "../ui/button";
 const LeftSideBar = () => {
     const { mutate: signOut, isSuccess } = useSignOutAccount();
     const navigate = useNavigate();
@@ -73,6 +74,15 @@ const LeftSideBar = () => {
                     })}
                 </ul>
             </div>
+
+            <Button
+                variant="ghost"
+                className="shad-button_ghost"
+                onClick={() => signOut()}
+            >
+                <img src="/assets/icons/logout.svg" alt="logout" />
+                <p className="small-medium lg:base-medium">Logout</p>
+            </Button>
         </nav>
     );
 };
