@@ -20,3 +20,12 @@ export const SignInValidation = z.object({
         .string()
         .min(8, { message: "Password must be at least 8 characters long" }),
 });
+export const PostValidation = z.object({
+    caption: z
+        .string()
+        .min(5, { message: "Caption must be at least 5 characters long" })
+        .max(2200, { message: "Caption must be at most 2200 characters long" }),
+    file: z.custom<File[]>(),
+    location: z.string().min(2).max(100).optional(),
+    tags: z.string(),
+});
