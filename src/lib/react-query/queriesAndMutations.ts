@@ -7,8 +7,10 @@ import {
 import {
     createPost,
     createUserAccount,
+    deleteSavedPost,
     getRecentPosts,
     likePost,
+    savedPost,
     signInAccount,
     signOutAccount,
 } from "../appwrite/api";
@@ -66,6 +68,43 @@ export const useLikePost = () => {
             queryClient.invalidateQueries({
                 queryKey: [QUERY_KEYS.GET_POST_BY_ID, data?.$id],
             });
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
+            });
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_POSTS],
+            });
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_CURRENT_USER],
+            });
+        },
+    });
+};
+
+export const useSavePost = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ postId, userId }: { postId: string; userId: string }) =>
+            savedPost(postId, userId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
+            });
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_POSTS],
+            });
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_CURRENT_USER],
+            });
+        },
+    });
+};
+
+export const useDeleteSavedPost = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (savedRecordId: string) => deleteSavedPost(savedRecordId),
+        onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
             });
