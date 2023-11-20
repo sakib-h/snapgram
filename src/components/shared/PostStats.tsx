@@ -1,6 +1,6 @@
-import { useUserContext } from "@/context/AuthContext";
 import {
     useDeleteSavedPost,
+    useGetCurrentUser,
     useLikePost,
     useSavePost,
 } from "@/lib/react-query/queriesAndMutations";
