@@ -6,7 +6,7 @@ import {
 } from "@/lib/react-query/queriesAndMutations";
 import { checkIsLiked } from "@/lib/utils";
 import { Models } from "appwrite";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 type PostStatsProps = {
     post: Models.Document;
@@ -23,11 +23,34 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
     const { mutate: savePost } = useSavePost();
     const { mutate: deleteSavedPost } = useDeleteSavedPost();
     // current user
-    const { data: currentUser } = useUserContext();
+    const { data: currentUser } = useGetCurrentUser();
 
     // handle like post
-    const handleLikePost = async () => {};
-    const handleSavedPost = async () => {};
+    const handleLikePost = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        let newLikes = [...likes];
+        const hasLiked = newLikes.includes(userId);
+        if (hasLiked) {
+            newLikes = newLikes.filter((id) => id !== userId);
+        } else {
+            newLikes.push(userId);
+        }
+        setLikes(newLikes);
+        likePost({ postId: post.$id, likesArray: newLikes });
+    };
+    const handleSavePost = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        const savedPostRecord = currentUser?.save.find(
+            (record: Models.Document) => record.$id === post.$id
+        );
+        if (savedPostRecord) {
+            setIsSaved(false);
+            deleteSavedPost(savedPostRecord.$id);
+        } else {
+            savePost({ postId: post.$id, userId });
+            setIsSaved(true);
+        }
+    };
     return (
         <div className="flex justify-between items-center z-20">
             <div className="flex gap-2 mr-5">
@@ -55,7 +78,7 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
                     alt="like"
                     width={20}
                     height={20}
-                    onClick={() => {}}
+                    onClick={handleSavePost}
                     className="cursor-pointer"
                 />
             </div>
