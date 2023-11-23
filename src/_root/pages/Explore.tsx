@@ -1,13 +1,33 @@
 import GridPostList from "@/components/shared/GridPostList";
+import Loader from "@/components/shared/Loader";
 import SearchResults from "@/components/shared/SearchResults";
 import { Input } from "@/components/ui/input";
+import useDebounce from "@/hooks/useDebounce";
+import {
+    useGetPosts,
+    useSearchPosts,
+} from "@/lib/react-query/queriesAndMutations";
 import { useState } from "react";
 
 const Explore = () => {
     const [searchValue, setSearchValue] = useState("");
-    // const posts =[]
-    // const shouldShowSearchResults = searchValue.length > 0;
-    // const shouldShowPost = !shouldShowSearchResults && posts.pages.every((item)=>item.documents.length === 0);
+    const { data: posts, fetchNextPage, hasNextPage } = useGetPosts();
+    const deBouncedValue = useDebounce(searchValue, 500);
+    const { data: searchedPosts, isFetching: isSearchFetching } =
+        useSearchPosts(deBouncedValue);
+
+    if (!posts) {
+        return (
+            <div className="flex-center w-full h-full">
+                <Loader />
+            </div>
+        );
+    }
+
+    const shouldShowSearchResults = searchValue.length > 0;
+    const shouldShowPost =
+        !shouldShowSearchResults &&
+        posts.pages.every((item) => item.documents.length === 0);
     return (
         <div className="explore-container">
             <div className="explore-inner_container">
@@ -42,9 +62,22 @@ const Explore = () => {
                     />
                 </div>
             </div>
-            {/* <div className="flex flex-wrap gap-9 w-full max-w-5xl">
-              {shouldShowSearchResults ? <SearchResults/> : shouldShowPost ? <p className="w-full text-light-4 mt-10 text-center">End of posts</p> : posts.pages.map((item, index)=> <GridPostList key={`page-${index}`} posts={item.documents}/>)}
-            </div> */}
+            <div className="flex flex-wrap gap-9 w-full max-w-5xl">
+                {shouldShowSearchResults ? (
+                    <SearchResults />
+                ) : shouldShowPost ? (
+                    <p className="w-full text-light-4 mt-10 text-center">
+                        End of posts
+                    </p>
+                ) : (
+                    posts.pages.map((item, index) => (
+                        <GridPostList
+                            key={`page-${index}`}
+                            posts={item.documents}
+                        />
+                    ))
+                )}
+            </div>
         </div>
     );
 };
