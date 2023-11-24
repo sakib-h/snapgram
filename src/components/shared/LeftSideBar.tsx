@@ -34,7 +34,7 @@ const LeftSideBar = () => {
                     <img
                         src={
                             user.imageUrl ||
-                            "/assets/images/profile.placeholder.svg"
+                            "/assets/images/profile-placeholder.svg"
                         }
                         alt="profile"
                         className="h-14 w-14 rounded-full"
