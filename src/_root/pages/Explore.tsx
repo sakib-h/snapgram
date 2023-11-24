@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import GridPostList from "@/components/shared/GridPostList";
 import Loader from "@/components/shared/Loader";
 import SearchResults from "@/components/shared/SearchResults";
@@ -7,14 +8,19 @@ import {
     useGetPosts,
     useSearchPosts,
 } from "@/lib/react-query/queriesAndMutations";
-import { useState } from "react";
+import { useInView } from "react-intersection-observer";
 
 const Explore = () => {
+    const { ref, inView } = useInView();
     const [searchValue, setSearchValue] = useState("");
     const { data: posts, fetchNextPage, hasNextPage } = useGetPosts();
     const deBouncedValue = useDebounce(searchValue, 500);
     const { data: searchedPosts, isFetching: isSearchFetching } =
         useSearchPosts(deBouncedValue);
+
+    useEffect(() => {
+        if (inView && !searchValue) fetchNextPage();
+    }, [inView, searchValue]);
 
     if (!posts) {
         return (
@@ -27,7 +33,7 @@ const Explore = () => {
     const shouldShowSearchResults = searchValue.length > 0;
     const shouldShowPost =
         !shouldShowSearchResults &&
-        posts.pages.every((item) => item.documents.length === 0);
+        posts.pages.every((item) => item?.documents.length === 0);
     return (
         <div className="explore-container">
             <div className="explore-inner_container">
@@ -81,6 +87,12 @@ const Explore = () => {
                     ))
                 )}
             </div>
+
+            {hasNextPage && !searchValue && (
+                <div ref={ref} className="mt-10">
+                    <Loader />
+                </div>
+            )}
         </div>
     );
 };
